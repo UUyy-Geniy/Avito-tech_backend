@@ -5,6 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from django.core.cache import cache
 
 from .models import Banner, BannerTag, Tag, Feature
 from .serializers import BannerSerializer, FeatureSerializer, TagSerializer
@@ -18,6 +19,7 @@ class UserBannerView(APIView):
     def get(self, request):
         tag_id = request.query_params.get('tag_id')
         feature_id = request.query_params.get('feature_id')
+        use_last_revision = self.request.query_params.get("use_last_revision") == 'true'
 
         if not tag_id or not feature_id:
             return Response({"error": "Некорректные данные"}, status=status.HTTP_400_BAD_REQUEST)
@@ -32,8 +34,18 @@ class UserBannerView(APIView):
         except BannerTag.DoesNotExist:
             return Response({"error": "Баннер не найден"}, status=status.HTTP_404_NOT_FOUND)
 
-        serializer = BannerSerializer(banner_tag.banner)
-        return Response(serializer.data["content"])
+        if use_last_revision:
+            serializer = BannerSerializer(banner_tag.banner)
+            print("Выдал из бд")
+            return Response(serializer.data["content"])
+        else:
+            # Получить закешированную информацию, которая была актуальна 5 минут назад
+            cached_content = cache.get(f"banner_content_{banner_tag.banner.id}")
+            if cached_content is None:
+                serializer = BannerSerializer(banner_tag.banner)
+                cached_content = serializer.data["content"]
+                cache.set(f"banner_content_{banner_tag.banner.id}", cached_content, 5 * 60)
+            return Response(cached_content)
 
 
 class BannerView(APIView):
