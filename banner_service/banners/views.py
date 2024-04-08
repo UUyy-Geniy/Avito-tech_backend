@@ -36,8 +36,8 @@ class UserBannerView(APIView):
 
         if use_last_revision:
             serializer = BannerSerializer(banner_tag.banner)
-            print("Выдал из бд")
-            return Response(serializer.data["content"])
+            # print("Выдал из бд")
+            return Response(serializer.data)
         else:
             # Получить закешированную информацию, которая была актуальна 5 минут назад
             cached_content = cache.get(f"banner_content_{banner_tag.banner.id}")

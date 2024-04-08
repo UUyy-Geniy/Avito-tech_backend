@@ -25,20 +25,18 @@ schema_view = get_schema_view(
 
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('admin/', admin.site.urls, name='admin'),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 
-    path('feature/create/', FeatureCreateView.as_view()),
-    path('tag/create/', TagCreateView.as_view()),
+    path('feature/create/', FeatureCreateView.as_view(), name='feature-create'),
+    path('tag/create/', TagCreateView.as_view(), name='tag-create'),
 
-    path('api-auth/', include('rest_framework.urls')),
-    path('auth/', include('djoser.urls')),
-    re_path('auth/', include('djoser.urls.authtoken')),
+    path('api-auth/', include('rest_framework.urls'), name='api-auth'),
+    path('auth/', include('djoser.urls'), name='auth'),
+    re_path('auth/', include('djoser.urls.authtoken'), name='auth-token'),
 
-
-
-    path('user_banner/', UserBannerView.as_view()),
-    path('banner/', BannerView.as_view()),
-    path('banner/<int:pk>/', BannerUpdateDestroyView.as_view()),
+    path('user_banner/', UserBannerView.as_view(), name='user-banner'),
+    path('banner/', BannerView.as_view(), name='banner-list'),
+    path('banner/<int:pk>/', BannerUpdateDestroyView.as_view(), name='banner-detail'),
 ]
