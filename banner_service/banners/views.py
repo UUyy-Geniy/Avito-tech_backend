@@ -10,7 +10,7 @@ from django.core.cache import cache
 from .models import Banner, BannerTag, Tag, Feature
 from .serializers import BannerSerializer, FeatureSerializer, TagSerializer
 from .permissions import IsAdminUser
-from .exceptions import custom_exception_handler, DuplicateDataException
+from .exceptions import DuplicateDataException
 
 
 class UserBannerView(APIView):

@@ -1,5 +1,3 @@
-import json
-
 from rest_framework import serializers
 from .models import Tag, Feature, Banner, BannerTag
 
@@ -36,5 +34,6 @@ class BannerSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         tags = Tag.objects.filter(pk__in=validated_data["tags"])
-        banner = Banner.objects.create(feature_id=validated_data["feature"], content=validated_data["content"], is_active=validated_data["is_active"])
+        banner = Banner.objects.create(feature_id=validated_data["feature"], content=validated_data["content"],
+                                       is_active=validated_data["is_active"])
         return banner
