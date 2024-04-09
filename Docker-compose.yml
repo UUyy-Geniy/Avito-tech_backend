@@ -1,0 +1,64 @@
+version: '3'
+
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/banner_service
+    working_dir: /banner_service/banner_service
+    command: >
+      sh -c "python manage.py runserver 0.0.0.0:8000"
+    environment:
+      - DB_HOST=database
+      - DB_NAME=dbname
+      - DB_USER=dbuser
+      - DB_PASS=pass
+    depends_on:
+      - database
+
+
+  database:
+    image: postgres:14.6-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=dbname
+      - POSTGRES_USER=dbuser
+      - POSTGRES_PASSWORD=pass
+
+  redis:
+    image: redis:7.0.5-alpine
+    hostname: redis
+
+  worker:
+    build: .
+    hostname: worker
+    volumes:
+      - .:/banner_service
+    working_dir: /banner_service/banner_service
+    entrypoint: celery
+    command: -A celery_app.app worker --loglevel=info
+    links:
+      - redis
+    depends_on:
+      - redis
+
+  flower:
+    build: .
+    hostname: flower
+    volumes:
+      - .:/banner_service
+    working_dir: /banner_service/banner_service
+    entrypoint: celery
+    command: -A celery_app.app flower
+    links:
+      - redis
+    depends_on:
+      - redis
+    ports:
+      - "5555:5555"
+
+    
+  

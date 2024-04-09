@@ -86,14 +86,14 @@ WSGI_APPLICATION = 'banner_service.wsgi.application'
 
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_NAME'),
-        'USER': os.getenv('DB_USER'),
-        'PASSWORD': os.getenv('DB_PASSWORD'),
-        'HOST': os.getenv('DB_HOST'),
-        'PORT': os.getenv('DB_PORT'),
-    },
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.postgresql',
+    #     'NAME': os.getenv('DB_NAME'),
+    #     'USER': os.getenv('DB_USER'),
+    #     'PASSWORD': os.getenv('DB_PASSWORD'),
+    #     'HOST': os.getenv('DB_HOST'),
+    #     'PORT': os.getenv('DB_PORT'),
+    # },
     # 'default': {
     #         'ENGINE': 'django.db.backends.postgresql',
     #         'NAME': os.getenv('TEST_DB_NAME'),
@@ -102,6 +102,13 @@ DATABASES = {
     #         'HOST': os.getenv('TEST_DB_HOST'),
     #         'PORT': os.getenv('TEST_DB_PORT'),
     #     }
+    'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.environ.get('DB_NAME'),
+            'USER': os.environ.get('DB_USER'),
+            'PASSWORD': os.environ.get('DB_PASS'),
+            'HOST': os.environ.get('DB_HOST'),
+        },
 }
 
 # Password validation
@@ -166,4 +173,14 @@ CACHES = {
 }
 
 # DATABASE_ROUTERS = ['routers.TestDbRouter']
+
+# Broker settings
+CELERY_BROKER_URL = 'redis://redis:6379/0'
+
+# Results backend (optional)
+# CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+# CELERY_ACCEPT_CONTENT = ['json']
+# CELERY_TASK_SERIALIZER = 'json'
+# CELERY_RESULT_SERIALIZER = 'json'
+# CELERY_TIMEZONE = 'UTC'
 
