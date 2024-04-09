@@ -43,7 +43,7 @@ class UserBannerView(APIView):
             cached_content = cache.get(f"banner_content_{banner_tag.banner.id}")
             if cached_content is None:
                 serializer = BannerSerializer(banner_tag.banner)
-                cached_content = serializer.data["content"]
+                cached_content = serializer.data
                 cache.set(f"banner_content_{banner_tag.banner.id}", cached_content, 5 * 60)
             return Response(cached_content)
 

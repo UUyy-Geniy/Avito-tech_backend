@@ -93,7 +93,15 @@ DATABASES = {
         'PASSWORD': os.getenv('DB_PASSWORD'),
         'HOST': os.getenv('DB_HOST'),
         'PORT': os.getenv('DB_PORT'),
-    }
+    },
+    # 'default': {
+    #         'ENGINE': 'django.db.backends.postgresql',
+    #         'NAME': os.getenv('TEST_DB_NAME'),
+    #         'USER': os.getenv('TEST_DB_USER'),
+    #         'PASSWORD': os.getenv('TEST_DB_PASSWORD'),
+    #         'HOST': os.getenv('TEST_DB_HOST'),
+    #         'PORT': os.getenv('TEST_DB_PORT'),
+    #     }
 }
 
 # Password validation
@@ -156,4 +164,6 @@ CACHES = {
         'LOCATION': os.path.join(BASE_DIR, 'banners_cache'),
     }
 }
+
+# DATABASE_ROUTERS = ['routers.TestDbRouter']
 
