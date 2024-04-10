@@ -2,14 +2,14 @@ from django.db import models
 
 
 class Feature(models.Model):
-    name = models.CharField(max_length=255, unique=True)
+    name = models.CharField(max_length=255, unique=True, db_index=True)
 
     def __str__(self):
         return f"Feature(name={self.name})"
 
 
 class Tag(models.Model):
-    name = models.CharField(max_length=255, unique=True)
+    name = models.CharField(max_length=255, unique=True, db_index=True)
 
     def __str__(self):
         return f"Tag(name={self.name})"
@@ -31,3 +31,4 @@ class BannerTag(models.Model):
 
     class Meta:
         unique_together = ('tag', 'feature')
+        indexes = [models.Index(fields=['tag', 'feature'])]
