@@ -11,6 +11,7 @@ from .models import Banner, BannerTag, Tag, Feature
 from .serializers import BannerSerializer, FeatureSerializer, TagSerializer
 from .permissions import IsAdminUser
 from .exceptions import DuplicateDataException
+from .tasks import delete_banners_by_feature_or_tag
 
 
 class UserBannerView(APIView):
@@ -79,6 +80,18 @@ class BannerView(APIView):
 
             return Response(banner_serializer.data, status=status.HTTP_201_CREATED)
         return Response(banner_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request):
+        feature_id = request.query_params.get('feature_id')
+        tag_id = request.query_params.get('tag_id')
+
+        # Инициируем асинхронную задачу на удаление
+        delete_banners_by_feature_or_tag.apply_async(kwargs={'feature_id': feature_id, 'tag_id': tag_id})
+
+        return Response({'status': 'deletion started'}, status=status.HTTP_202_ACCEPTED)
+
+
+
 
 
 class BannerUpdateDestroyView(APIView):
