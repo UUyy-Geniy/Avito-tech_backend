@@ -8,9 +8,10 @@ from rest_framework import status
 from django.core.cache import cache
 
 from .models import Banner, BannerTag, Tag, Feature
-from .serializers import BannerSerializer, FeatureSerializer, TagSerializer
+from .serializers import BannerSerializer, FeatureSerializer, TagSerializer, BannerHistorySerializer
 from .permissions import IsAdminUser
 from .exceptions import DuplicateDataException
+from .signals import clear_cache_on_banner_change
 from .tasks import delete_banners_by_feature_or_tag
 
 
@@ -128,3 +129,29 @@ class TagCreateView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class BannerHistoryView(APIView):
+    permission_classes = [IsAdminUser]
+
+    def get(self, request, pk):
+        banner = get_object_or_404(Banner, pk=pk)
+        history = banner.history.all()[:3]  # Получить последние 3 версии
+        serializer = BannerHistorySerializer(history, many=True)
+        return Response(serializer.data)
+
+
+class BannerRevertView(APIView):
+    permission_classes = [IsAdminUser]
+
+    def post(self, request, pk, version):
+        banner = get_object_or_404(Banner, pk=pk)
+        history_record = banner.history.get(history_id=version)
+        for field in banner._meta.fields:  # Копировать все поля кроме 'id'
+            if field.name != 'id':
+                setattr(banner, field.name, getattr(history_record.instance, field.name))
+        banner.save()
+        serializer = BannerSerializer(banner)
+        # Очистить кэш для баннера, если используется
+        clear_cache_on_banner_change(Banner, banner)
+        return Response(serializer.data)

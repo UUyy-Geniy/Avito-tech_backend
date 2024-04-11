@@ -37,3 +37,9 @@ class BannerSerializer(serializers.ModelSerializer):
         banner = Banner.objects.create(feature_id=validated_data["feature"], content=validated_data["content"],
                                        is_active=validated_data["is_active"])
         return banner
+
+
+class BannerHistorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Banner.history.model
+        fields = '__all__'

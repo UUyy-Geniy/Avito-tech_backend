@@ -5,30 +5,18 @@ from .models import Banner, BannerTag
 
 
 @receiver(post_save, sender=Banner)
-def clear_cache_on_banner_save(sender, instance, **kwargs):
-    """
-    Очищает кэш при сохранении объекта баннера.
-    """
-    cache_key = f"banner_{instance.id}"
-    cache.delete(cache_key)
+@receiver(post_delete, sender=Banner)
+def clear_cache_on_banner_change(sender, instance, **kwargs):
+    # Удаляем кэш для всех тегов и фич связанных с баннером
+    banner_tags = instance.banner_tags.all()
+    for banner_tag in banner_tags:
+        cache_key = f"banner_{banner_tag.feature_id}_{banner_tag.tag_id}"
+        cache.delete(cache_key)
 
 
 @receiver(post_save, sender=BannerTag)
 @receiver(post_delete, sender=BannerTag)
 def clear_cache_on_bannertag_change(sender, instance, **kwargs):
-    """
-    Очищает кэш при изменении или удалении связи BannerTag.
-    """
-    related_banners = Banner.objects.filter(banner_tags__tag=instance.tag, banner_tags__feature=instance.feature)
-    for banner in related_banners:
-        cache_key = f"banner_{banner.id}"  # Ключ включает ID каждого связанного баннера
-        cache.delete(cache_key)
-
-
-@receiver(post_delete, sender=Banner)
-def clear_cache_on_banner_delete(sender, instance, **kwargs):
-    """
-    Очищает кэш при удалении объекта баннера.
-    """
-    cache_key = f"banner_{instance.id}"  # Ключ включает ID баннера
+    # Удаляем кэш для конкретного изменения в BannerTag
+    cache_key = f"banner_{instance.feature_id}_{instance.tag_id}"
     cache.delete(cache_key)

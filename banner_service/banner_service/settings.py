@@ -43,6 +43,7 @@ INSTALLED_APPS = [
 
     # 'banners',
     'banners.apps.BannersConfig',
+    'simple_history',
 
     'rest_framework',
     'rest_framework.authtoken',

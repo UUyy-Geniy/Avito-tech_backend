@@ -4,7 +4,8 @@ from banners.views import (
     UserBannerView,
     BannerView,
     BannerUpdateDestroyView,
-    TagCreateView, FeatureCreateView
+    TagCreateView, FeatureCreateView,
+    BannerHistoryView, BannerRevertView
 )
 
 from drf_yasg.views import get_schema_view
@@ -13,11 +14,11 @@ from drf_yasg import openapi
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="Your API",
+        title="Banner API",
         default_version='v1',
         description="Description of your API",
         terms_of_service="https://www.example.com/policies/terms/",
-        contact=openapi.Contact(email="contact@example.com"),
+        contact=openapi.Contact(email="banner@example.com"),
         license=openapi.License(name="BSD License"),
     ),
     public=True
@@ -39,4 +40,9 @@ urlpatterns = [
     path('user_banner/', UserBannerView.as_view(), name='user-banner'),
     path('banner/', BannerView.as_view(), name='banner-list'),
     path('banner/<int:pk>/', BannerUpdateDestroyView.as_view(), name='banner-detail'),
+
+
+    path('banner/<int:pk>/history/', BannerHistoryView.as_view(), name='banner-history'),
+    path('banner/<int:pk>/history/<int:version>/revert/', BannerRevertView.as_view(), name='revert-banner'),
 ]
+
