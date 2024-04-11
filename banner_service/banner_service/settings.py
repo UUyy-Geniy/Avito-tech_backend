@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'banners',
+    # 'banners',
+    'banners.apps.BannersConfig',
 
     'rest_framework',
     'rest_framework.authtoken',
@@ -166,10 +167,17 @@ REST_FRAMEWORK = {
 
 
 CACHES = {
+    # 'default': {
+    #     'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+    #     'LOCATION': os.path.join(BASE_DIR, 'banners_cache'),
+    # },
     'default': {
-        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-        'LOCATION': os.path.join(BASE_DIR, 'banners_cache'),
-    }
+            'BACKEND': 'django_redis.cache.RedisCache',
+            'LOCATION': 'redis://redis:6379/1',
+            'OPTIONS': {
+                'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+            },
+        }
 }
 
 # DATABASE_ROUTERS = ['routers.TestDbRouter']

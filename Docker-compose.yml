@@ -30,6 +30,7 @@ services:
 
   redis:
     image: redis:7.0.5-alpine
+    command: redis-server --maxmemory 256mb --maxmemory-policy allkeys-lfu
     hostname: redis
 
   worker:

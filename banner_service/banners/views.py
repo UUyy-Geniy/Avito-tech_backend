@@ -20,33 +20,30 @@ class UserBannerView(APIView):
     def get(self, request):
         tag_id = request.query_params.get('tag_id')
         feature_id = request.query_params.get('feature_id')
-        use_last_revision = self.request.query_params.get("use_last_revision") == 'true'
+        use_last_revision = request.query_params.get("use_last_revision") == 'true'
 
         if not tag_id or not feature_id:
             return Response({"error": "Некорректные данные"}, status=status.HTTP_400_BAD_REQUEST)
 
-        banner_tags_qs = BannerTag.objects.filter(tag_id=tag_id, feature_id=feature_id)
-
-        if not request.user.is_staff:
-            banner_tags_qs = banner_tags_qs.filter(banner__is_active=True)
-
-        try:
-            banner_tag = banner_tags_qs.get()
-        except BannerTag.DoesNotExist:
-            return Response({"error": "Баннер не найден"}, status=status.HTTP_404_NOT_FOUND)
+        cache_key = f"banner_{feature_id}_{tag_id}"
 
         if use_last_revision:
-            serializer = BannerSerializer(banner_tag.banner)
-            # print("Выдал из бд")
-            return Response(serializer.data)
+            banner = self.get_banner(tag_id, feature_id)
         else:
-            # Получить закешированную информацию, которая была актуальна 5 минут назад
-            cached_content = cache.get(f"banner_content_{banner_tag.banner.id}")
-            if cached_content is None:
-                serializer = BannerSerializer(banner_tag.banner)
-                cached_content = serializer.data
-                cache.set(f"banner_content_{banner_tag.banner.id}", cached_content, 5 * 60)
-            return Response(cached_content)
+            banner = cache.get(cache_key)
+            if not banner:
+                banner = self.get_banner(tag_id, feature_id)
+                cache.set(cache_key, banner)
+
+        return Response(banner)
+
+    def get_banner(self, tag_id, feature_id):
+        banner_tags_qs = BannerTag.objects.filter(tag_id=tag_id, feature_id=feature_id)
+        if not self.request.user.is_staff:
+            banner_tags_qs = banner_tags_qs.filter(banner__is_active=True)
+        banner_tag = get_object_or_404(banner_tags_qs)
+        serializer = BannerSerializer(banner_tag.banner)
+        return serializer.data
 
 
 class BannerView(APIView):
@@ -89,9 +86,6 @@ class BannerView(APIView):
         delete_banners_by_feature_or_tag.apply_async(kwargs={'feature_id': feature_id, 'tag_id': tag_id})
 
         return Response({'status': 'deletion started'}, status=status.HTTP_202_ACCEPTED)
-
-
-
 
 
 class BannerUpdateDestroyView(APIView):
