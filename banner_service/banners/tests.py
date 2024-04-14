@@ -175,6 +175,18 @@ class BannerIntegrationTestCase(TestCase):
         expected_content = json.dumps({"text": "Banner 1"})
         self.assertEqual(response.json()["content"], expected_content)
 
+    def _test_banner_deletion_by_tag_or_feature(self):
+        """Тестирование отложенного запроса на удаление баннера по тегу или фиче"""
+        user_token = self.create_user_and_get_token("test_user", "abc123Testing")
+        response = self.get_banner(user_token, tag_id=1, feature_id=1)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        admin_token = self.get_authorization_token(self.admin_credentials["username"],
+                                                   self.admin_credentials["password"])
+        # К примеру, по тегу
+        param = {'tag_id': 1}
+        response = self.client.delete('/banner/', param, HTTP_AUTHORIZATION='Token ' + admin_token)
+        self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
+
     def test_all_cases(self):
         self._test_inactive_banner()
         self._test_unauthorized_access()
@@ -185,3 +197,4 @@ class BannerIntegrationTestCase(TestCase):
         self._test_banner_deletion()
         self._test_banner_history()
         self._test_banner_history_revertation()
+        self._test_banner_deletion_by_tag_or_feature()
