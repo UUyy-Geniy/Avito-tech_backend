@@ -8,16 +8,16 @@ git clone https://github.com/UUyy-Geniy/Avito-tech_backend-trainee_assignment-20
 ```
 - Сборка, запуск контейнеров и применение миграций к вашей базе данных
 ```sh
-docker-compose up --build -d
-docker-compose exec api python manage.py migrate
+make up
+make migrate
 ```
 - Создание суперпользователя для доступа к админ-панели Django
 ```sh
-docker-compose exec api python manage.py createsuperuser
+make admin
 ```
 - E2E тестирование
 ```sh
-docker-compose exec api python manage.py test
+make test
 ```
 ## Используемые технологии
 - Django и Django REST Framework для создания REST API.

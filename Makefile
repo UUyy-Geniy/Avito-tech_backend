@@ -1,15 +1,19 @@
 build:
-    docker-compose build
+	docker-compose build
 
-up:
-    docker-compose up
+up: build
+	docker-compose up
 
-down:
-    docker-compose down
+migrate:
+	docker-compose run --rm api sh -c "python manage.py migrate"
 
-admin:
+admin: migrate
 	docker-compose run --rm api sh -c "python manage.py createsuperuser"
 
-test:
-    docker-compose run --rm api sh -c "python manage.py test"
+test: migrate
+	docker-compose run --rm api sh -c "python manage.py test"
+
+down:
+	docker-compose down
+
 
