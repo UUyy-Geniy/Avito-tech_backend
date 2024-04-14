@@ -4,7 +4,7 @@
 - Клонирование репозитория
 Для начала склонируйте репозиторий:
 ```sh
-git clone https://github.com/UUyy-Geniy/Avito-tech_backend-trainee_assignment-2024_.git
+git clone https://github.com/UUyy-Geniy/Avito-tech_backend.git
 ```
 - Сборка, запуск контейнеров и применение миграций к вашей базе данных
 ```sh
