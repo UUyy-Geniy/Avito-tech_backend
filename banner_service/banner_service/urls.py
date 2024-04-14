@@ -45,4 +45,3 @@ urlpatterns = [
     path('banner/<int:pk>/history/', BannerHistoryView.as_view(), name='banner-history'),
     path('banner/<int:pk>/history/<int:version>/revert/', BannerRevertView.as_view(), name='revert-banner'),
 ]
-

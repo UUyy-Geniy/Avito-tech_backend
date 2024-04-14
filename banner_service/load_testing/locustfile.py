@@ -127,7 +127,8 @@ class WebsiteUser(HttpUser):
 #             banner_content = json.dumps({"text": f"Banner {i+1}"})
 #             tags_for_banner = [self.tag_ids[i]]  # Можно указать более одного тега, если нужно
 #             feature_for_banner = self.feature_ids[i]
-#             AdminTasks.create_banner(self.client, self.token, feature_for_banner, banner_content, True, tags_for_banner)
+#             AdminTasks.create_banner(self.client, self.token,
+#             feature_for_banner, banner_content, True, tags_for_banner)
 #
 #         self.logout()
 #

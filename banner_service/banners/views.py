@@ -11,7 +11,6 @@ from .models import Banner, BannerTag, Tag, Feature
 from .serializers import BannerSerializer, FeatureSerializer, TagSerializer, BannerHistorySerializer
 from .permissions import IsAdminUser
 from .exceptions import DuplicateDataException
-from .signals import clear_cache_on_banner_change
 from .tasks import delete_banners_by_feature_or_tag
 
 
@@ -34,7 +33,7 @@ class UserBannerView(APIView):
             banner = cache.get(cache_key)
             if not banner:
                 banner = self.get_banner(tag_id, feature_id)
-                cache.set(cache_key, banner)
+                cache.set(cache_key, banner, 60 * 5)
 
         return Response(banner)
 
@@ -152,6 +151,4 @@ class BannerRevertView(APIView):
                 setattr(banner, field.name, getattr(history_record.instance, field.name))
         banner.save()
         serializer = BannerSerializer(banner)
-        # Очистить кэш для баннера, если используется
-        clear_cache_on_banner_change(Banner, banner)
         return Response(serializer.data)

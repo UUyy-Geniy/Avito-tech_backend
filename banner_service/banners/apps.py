@@ -5,5 +5,5 @@ class BannersConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'banners'
 
-    def ready(self):
-        import banners.signals
+    # def ready(self):
+    #     import banners.signals
